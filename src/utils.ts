@@ -8,6 +8,8 @@ import { u128, Context, ContractPromise } from "near-sdk-as";
  * Account IDs in NEAR are just strings.
  */
 export type AccountId = string;
+export type VehicleId = string;
+export type VehicleServiceId = string;
 
 /**
  * Gas is u64
@@ -19,9 +21,7 @@ export type Gas = u64;
  */
 
 export type Amount = u128;
-
 export type Balance = Amount;
-
 export type Money = Amount;
 
 /**
@@ -74,6 +74,20 @@ export function asNEAR(amount: u128): string {
  */
 export function toYocto(amount: number): u128 {
   return u128.mul(ONE_NEAR, u128.from(amount))
+}
+
+/**
+ * @function idCreator
+ * @return {string}
+ * Creates a unique id by combining sender + block height
+ */
+export function idCreator(): string {
+  // let title = Context.sender.substring(0, Context.sender.lastIndexOf('.'))
+  // let title = Context.sender
+  // let id = title + '-' + Context.blockIndex.toString()
+  let id =  Context.blockIndex.toString()
+
+  return id
 }
 
 /**

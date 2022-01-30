@@ -12,34 +12,34 @@ echo
 [ -z "$CONTRACT" ] && echo "Missing \$CONTRACT environment variable" && exit 1
 [ -z "$CONTRACT" ] || echo "Found it! \$CONTRACT is set to [ $CONTRACT ]"
 
-echo
+
+# ------------------------------------
+# Add Vehicle 
+# ------------------------------------
+
+# Uncomment lines below and run script to add Vehicle to Contract
+
+# echo ---------------------------------------------------------
+# echo " Calling addVehicle Method"
+# echo ---------------------------------------------------------
+# near call $CONTRACT addVehicle '{"year":"2013",  "make": "Mini", "model": "Cooper S",  "owner": "phoenixpulsar.testnet", "dateAcquired": "Dec 01, 2015", "vehicleNotes": "Used"}' --accountId $CONTRACT
+
+# ------------------------------------
+# Add Vehicle Service 
+# ------------------------------------
+
+# Uncomment lines below and run script to add Service (need vehicle id from above ID)
+
+# echo ---------------------------------------------------------
+# echo " Calling addService Method"
+# echo ---------------------------------------------------------
+# near call $CONTRACT addService '{"vehicleId": "77953292", "serviceDate": "Jan 11 2022",  "serviceNotes": "Serpentine Belt"}' --accountId $CONTRACT
+#  near call $CONTRACT addService '{"vehicleId": "78533855", "serviceDate": "Jan 11 2022",  "serviceNotes": "Flat Tire"}' --accountId $CONTRACT
+
+
 echo
 echo ---------------------------------------------------------
-echo "Step 1: Call 'view' functions on the contract"
-echo
-echo "(run this script again to see changes made by this file)"
+echo "Goodbye"
 echo ---------------------------------------------------------
 echo
-
-near view $CONTRACT helloWorld
-
-echo
-echo
-
-near view $CONTRACT read '{"key":"some-key"}'
-
-echo
-echo
-echo ---------------------------------------------------------
-echo "Step 2: Call 'change' functions on the contract"
-echo ---------------------------------------------------------
-echo
-
-# the following line fails with an error because we can't write to storage without signing the message
-# --> FunctionCallError(HostError(ProhibitedInView { method_name: "storage_write" }))
-# near view $CONTRACT write '{"key": "some-key", "value":"some value"}'
-near call $CONTRACT write '{"key": "some-key", "value":"some value"}' --accountId $CONTRACT
-
-echo
-echo "now run this script again to see changes made by this file"
 exit 0

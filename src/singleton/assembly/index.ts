@@ -1,68 +1,94 @@
-import { storage, Context } from "near-sdk-core"
+import { PersistentMap } from "near-sdk-core";
+import { AccountId, idCreator, VehicleId, VehicleServiceId } from "../../utils";
+@nearBindgen
+class VehicleService {
 
+  public id: VehicleServiceId
+  public vehicleId:VehicleId 
+  public serviceDate:string 
+  public serviceNotes:string
+
+  constructor(
+    vehicleId:VehicleId, 
+    serviceDate:string, 
+    serviceNotes:string
+    ) {
+      this.id = idCreator();
+      this.vehicleId = vehicleId;
+      this.serviceDate = serviceDate;
+      this.serviceNotes = serviceNotes
+    }
+}
+@nearBindgen
+class Vehicle {
+  public id: VehicleId
+  public serviceIds: Array<VehicleServiceId> 
+  public year:string
+  public make:string 
+  public model:string 
+  public owner:AccountId
+  public dateAcquired:string
+  public vehicleNotes:string
+  
+  constructor(
+    year:string,
+    make:string, 
+    model:string, 
+    owner:AccountId,
+    dateAcquired:string,
+    vehicleNotes:string
+    ) {
+      this.id = idCreator();
+      this.year = year;
+      this.make = make;
+      this.model = model;
+      this.owner = owner;
+      this.dateAcquired = dateAcquired;
+      this.vehicleNotes = vehicleNotes;
+      this.serviceIds = [];
+    }
+}
 @nearBindgen
 export class Contract {
-  private message: string = 'hello world'
+  constructor(
+    public vehicles: PersistentMap<VehicleId, Vehicle> = new PersistentMap<VehicleId, Vehicle>("v"),
+    public vehicleServiceHistory: PersistentMap<VehicleServiceId, VehicleService> = new PersistentMap<VehicleServiceId, VehicleService>("vs"),
+  ) {}
 
-  // return the string 'hello world'
-  helloWorld(): string {
-    return this.message
-  }
-
-  // read the given key from account (contract) storage
-  read(key: string): string {
-    if (isKeyInStorage(key)) {
-      return `✅ Key [ ${key} ] has value [ ${storage.getString(key)!} ] and "this.message" is [ ${this.message} ]`
-    } else {
-      return `🚫 Key [ ${key} ] not found in storage. ( ${this.storageReport()} )`
-    }
-  }
-
-  /**
-  write the given value at the given key to account (contract) storage
-  ---
-  note: this is what account storage will look like AFTER the write() method is called the first time
-  ╔════════════════════════════════╤══════════════════════════════════════════════════════════════════════════════════╗
-  ║                            key │ value                                                                            ║
-  ╟────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────╢
-  ║                          STATE │ {                                                                                ║
-  ║                                │   "message": "data was saved"                                                    ║
-  ║                                │ }                                                                                ║
-  ╟────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────╢
-  ║                       some-key │ some value                                                                       ║
-  ╚════════════════════════════════╧══════════════════════════════════════════════════════════════════════════════════╝
-   */
   @mutateState()
-  write(key: string, value: string): string {
-    storage.set(key, value)
-    this.message = 'data was saved' // this is why we need the deorator @mutateState() above the method name
-    return `✅ Data saved. ( ${this.storageReport()} )`
-  }
+  addVehicle(
+    year:string, 
+    make:string,  
+    model:string,  
+    owner:AccountId, 
+    dateAcquired:string, 
+    vehicleNotes:string,
+    ): void {
+      let newVehicle = new Vehicle(year,make, model, owner, dateAcquired, vehicleNotes);
+      this.vehicles.set(newVehicle.id, newVehicle);
+    }
 
+  @mutateState()
+  addService(
+    vehicleId:VehicleId,
+    serviceDate:string, 
+    serviceNotes:string
+    ): void {
+      let newVehicleService = new VehicleService(vehicleId, serviceDate, serviceNotes);
+      this.vehicleServiceHistory.set(newVehicleService.id, newVehicleService);
+      this.addServiceId(vehicleId, newVehicleService.id)
+    }
 
-  // private helper method used by read() and write() above
-  private storageReport(): string {
-    return `storage [ ${Context.storageUsage} bytes ]`
-  }
+  @mutateState()
+  addServiceId(
+    vehicleId:VehicleId,
+    vehicleServiceId:VehicleServiceId, 
+    ): void {
+      let currentVehicle = this.vehicles.get(vehicleId)
+      if(currentVehicle !== null){
+        currentVehicle.serviceIds.push(vehicleServiceId)
+        this.vehicles.set(vehicleId, currentVehicle)
+      }
+    } 
 }
-
-/**
- * This function exists only to avoid a compiler error
- *
-
-ERROR TS2339: Property 'contains' does not exist on type 'src/singleton/assembly/index/Contract'.
-
-     return this.contains(key);
-                 ~~~~~~~~
- in ~lib/near-sdk-core/storage.ts(119,17)
-
-/Users/sherif/Documents/code/near/_projects/edu.t3/starter--near-sdk-as/node_modules/asbuild/dist/main.js:6
-        throw err;
-        ^
-
- * @param key string key in account storage
- * @returns boolean indicating whether key exists
- */
-function isKeyInStorage(key: string): bool {
-  return storage.hasKey(key)
-}
+  
