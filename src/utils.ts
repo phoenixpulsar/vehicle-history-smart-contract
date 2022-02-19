@@ -1,5 +1,9 @@
 import { u128, Context, ContractPromise } from "near-sdk-as";
 
+
+// common keys for singleton instances and initialization
+export const VEHICLE_GARAGE_KEY = "state"
+
 /**
  * == TYPES ====================================================================
  */
@@ -104,3 +108,5 @@ export function assert_single_promise_success(): void {
   assert(x.length == 1, "Expected exactly one promise result")
   assert(x[0].succeeded, "Expected PromiseStatus to be successful")
 }
+
+

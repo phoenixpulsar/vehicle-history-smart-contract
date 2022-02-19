@@ -14,8 +14,8 @@ The example here is very basic.  It's a simple contract demonstrating the follow
 There are 2 AssemblyScript contracts in this project, each in their own folder:
 
 
-- **singleton** in the `src/singleton` folder
-### Singleton
+- **Vehicle** in the `src/Vehicle` folder
+### Vehicle
 
 We say that an AssemblyScript contract is written in the "singleton style" when the `index.ts` file (the contract entry point) has a single exported class (the name of the class doesn't matter) that is decorated with `@nearBindgen`.
 
@@ -118,7 +118,7 @@ export BENEFICIARY=<your-account-here>   # this account receives contract accoun
 │   └── README.md                      # documentation for helper scripts
 ├── src
 │   ├── as_types.d.ts                  # AssemblyScript headers for type hints
-│   ├── singleton                      # Contract 2: "Singleton-style example"
+│   ├── vehicle                      # Contract 2: "Singleton-style example"
 │   │   ├── __tests__
 │   │   │   ├── as-pect.d.ts           # as-pect unit testing headers for type hints
 │   │   │   └── index.unit.spec.ts     # unit tests for contract 2
