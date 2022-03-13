@@ -16,6 +16,9 @@ export type VehicleServiceId = string;
  */
 export type Gas = u64;
 
+// common keys for singlton instances and initialization
+export const GARAGE_KEY = "state"
+
 /**
  * Amounts, Balances, and Money in NEAR is are u128.
  */

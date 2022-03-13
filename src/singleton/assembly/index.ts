@@ -1,53 +1,29 @@
-import { PersistentMap } from "near-sdk-core";
-import { AccountId, idCreator, VehicleId, VehicleServiceId } from "../../utils";
+import { PersistentMap, storage } from "near-sdk-core";
+import { AccountId, idCreator, VehicleId, VehicleServiceId} from "../../utils";
 @nearBindgen
 class VehicleService {
-
-  public id: VehicleServiceId
-  public vehicleId:VehicleId 
-  public serviceDate:string 
-  public serviceNotes:string
-
+  public id: VehicleServiceId = idCreator()
   constructor(
-    vehicleId:VehicleId, 
-    serviceDate:string, 
-    serviceNotes:string
-    ) {
-      this.id = idCreator();
-      this.vehicleId = vehicleId;
-      this.serviceDate = serviceDate;
-      this.serviceNotes = serviceNotes
-    }
+    public vehicleId:VehicleId, 
+    public serviceDate:string, 
+    public serviceNotes:string
+    ) {}
 }
 @nearBindgen
 class Vehicle {
-  public id: VehicleId
-  public serviceIds: Array<VehicleServiceId> 
-  public year:string
-  public make:string 
-  public model:string 
-  public owner:AccountId
-  public dateAcquired:string
-  public vehicleNotes:string
+  public id: VehicleId = idCreator()
+  public serviceIds: Array<VehicleServiceId> = [] 
   
   constructor(
-    year:string,
-    make:string, 
-    model:string, 
-    owner:AccountId,
-    dateAcquired:string,
-    vehicleNotes:string
-    ) {
-      this.id = idCreator();
-      this.year = year;
-      this.make = make;
-      this.model = model;
-      this.owner = owner;
-      this.dateAcquired = dateAcquired;
-      this.vehicleNotes = vehicleNotes;
-      this.serviceIds = [];
-    }
+    public year:string,
+    public make:string, 
+    public model:string, 
+    public owner:AccountId,
+    public dateAcquired:string,
+    public vehicleNotes:string
+    ) { }
 }
+
 @nearBindgen
 export class Contract {
   constructor(
