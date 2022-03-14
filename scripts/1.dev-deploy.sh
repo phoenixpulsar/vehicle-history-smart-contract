@@ -21,7 +21,9 @@ echo ---------------------------------------------------------
 echo
 
 
-near dev-deploy ./build/release/singleton.wasm
+# near dev-deploy ./build/release/singleton.wasm
+
+near dev-deploy ./build/release/vehicleGarage.wasm
 
 echo
 echo

@@ -2,6 +2,7 @@ import {
     context,
     storage,
     PersistentMap,
+    PersistentSet
 } from "near-sdk-as";
 
 import { VehicleId, VehicleServiceId, AccountId, Timestamp, idCreator, GARAGE_KEY } from "../../utils";
@@ -10,7 +11,7 @@ import { VehicleId, VehicleServiceId, AccountId, Timestamp, idCreator, GARAGE_KE
 export class Vehicle {
 
     public id: VehicleId = idCreator();
-    public serviceIds: Array<VehicleServiceId> = [];
+    public serviceIds = new PersistentSet<VehicleServiceId>("s")
     created_at: Timestamp = context.blockTimestamp;
 
     constructor(
@@ -21,6 +22,7 @@ export class Vehicle {
         public vehicleNotes:string,
         public dateAcquired:string,
     ) {}
+
 }
 
 @nearBindgen
@@ -72,6 +74,7 @@ export class VehicleGarage {
             currentVehicle.owner = owner
             currentVehicle.vehicleNotes = vehicleNotes
             currentVehicle.dateAcquired = dateAcquired
+            vehicles.set(vehicleId, currentVehicle)
         }
     }
 
@@ -92,7 +95,7 @@ export class VehicleGarage {
     static add_service_id(vehicleId: VehicleId, vehicleServiceId: VehicleServiceId): void {
         let currentVehicle = vehicles.get(vehicleId)
         if(currentVehicle !== null) {
-            currentVehicle.serviceIds.push(vehicleServiceId)
+            currentVehicle.serviceIds.add(vehicleServiceId)
             vehicles.set(vehicleId, currentVehicle)
         }
     }
@@ -103,11 +106,18 @@ export class VehicleGarage {
             currentVehicleService.vehicleId = vehicleId
             currentVehicleService.serviceDate = serviceDate
             currentVehicleService.serviceNotes = serviceNotes
+            vehicleService.set(vehicleServiceId, currentVehicleService)
         }
    }
 
-   static delete_vehicle_service(vehicleServiceId: VehicleServiceId):void {
+   static delete_vehicle_service(vehicleServiceId: VehicleServiceId, vehicleId: VehicleServiceId):void {
        vehicleService.delete(vehicleServiceId)
+
+       // remove vehicleServiceId from vehicle service Ids
+       let currentVehicle = vehicles.get(vehicleId)
+       if(currentVehicle !== null) {
+           currentVehicle.serviceIds.delete(vehicleServiceId)
+       }
    }
 
 }
